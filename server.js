@@ -6,12 +6,18 @@ var cheerio = require("cheerio");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 
-var PORT = process.env.PORT || 3000;
+var PORT = 3000;
 
-var Article = require("./articleModel.js")
+var db = require("./models");
 
 //Initialize express
 var app = express();
+
+//Configure Handlebars
+app.engine("handlebars", exphbs({
+    defaultLayout: "main"
+}));
+app.set("view engine", "handlebars");
 
 // Use morgan logger for logging requests
 app.use(logger("dev"));
@@ -21,18 +27,9 @@ app.use(express.json());
 // Make public a static folder
 app.use(express.static("public"));
 
-//Database config
-// var databaseUrl = "observer";
-// var collections = ["scrapedData"];
-
-// var db = mongojs(databaseUrl, collections);
-// db.on("error", function(error) {
-//      console.log("Database Error: ", error);
-// });
-
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/observer";
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 //Routes
 app.get("/all", function(req, res) {
@@ -45,7 +42,7 @@ app.get("/all", function(req, res) {
     })
 });
 
-//Retrieve all scrapedData
+//Scrape Charlotte Observer
 app.get("/scrape", function(req, res) {
     axios.get("https://www.charlotteobserver.com/news/local").then(function(response) {
     //load the html body from axios into cheerio
@@ -54,35 +51,88 @@ app.get("/scrape", function(req, res) {
         $("figure").each(function(i, element) {
             var result = {};
             
-            // result.title = $(element).children("img").attr("alt");
+            //result.img = $(element).children("a").children("img").attr("src");
+            result.img = $(element).find("img").attr("src");
             result.url = $(element).children("a").attr("href");
             result.blurb = $(element).children("a").attr("title");
             
-            Article.create(result).then(function(data) {
+           db.Article.create(result).then(function(data) {
                 console.log(data);
             }).catch(function(err){
                 console.log(err);
             })
-
-            // if (result.title && result.url && result.blurb) {
-            //     MONGODB_URI.insert({
-            //         title: title,
-            //         url: url,
-            //         blurb: blurb
-            //     },
-            //     function(err, inserted) {
-            //         if (err) {
-            //             console.log(err);
-            //         } else {
-            //             console.log(inserted);
-            //         }
-            //     })
-            
-        
         }) 
     })
     res.send("Scrape Complete");
 });
+
+//get all articles
+app.get("/", function(req, res) {
+    db.Article.find({ saved: false }).then(function(dbArticle) {
+        var allObject = {
+            articles: dbArticle
+        }
+        res.render("index", allObject)
+    }).catch(function(err) {
+        console.log(err);
+    });
+});
+
+//Route to save Article
+app.put("/articles/:id", function(req, res) {
+    db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: true })
+        .then(function() {
+            console.log("Article Saved!")
+        }).catch(function(err) {
+            res.json(err)
+        })
+})
+
+//Route to remove Article from Saved
+app.put("/articles/:id", function(req, res) {
+    db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: false })
+        .then(function() {
+            console.log("Article removed from saved!")
+        }).catch(function(err) {
+            res.json(err)
+        })
+})
+
+
+
+//Route for grabbing a specific article by id and populate it with it's note
+app.get("/articles/:id", function(req, res) {
+    db.Article.findOne({ _id: req.params.id })
+        .populate("note")
+        .then(function(data) {
+            res.json(data);
+        }).catch(function(err) {
+            res.json(err);
+        });
+});
+
+//Route for saving/updating an Article's associated Note
+app.post("/articles/:id", function(req, res) {
+    db.Note.create(req.body)
+        .then(function(dbNote) {
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote }, { new: true });
+        })
+        .then(function(dbArticle) {
+            res.json(dbArticle);
+        }).catch(function(err) {
+            res.json(err);
+        });
+});
+
+//HTML Home
+//app.get("/", function(req, res) {
+//    res.render("index");
+//})
+
+//HTML Saved
+app.get("/saved", function(req, res){
+    res.render("saved");
+})
 
 app.listen(PORT, function() {
     console.log("App running on port 3000!")

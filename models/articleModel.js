@@ -3,6 +3,10 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var articleSchema = new Schema({
+    img: {
+        type: String,
+        unique: true
+    },
     url: {
         type: String,
         unique: true
@@ -14,6 +18,10 @@ var articleSchema = new Schema({
     saved: {
         type: Boolean,
         default: false
+    },
+    note: {
+        type: Schema.Types.ObjectId,
+        ref: "Note"
     }
 });
 

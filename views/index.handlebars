@@ -1,0 +1,41 @@
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <form class="form-inline">
+        <span class="navbar-brand mb-0 h1">Charlotte News Scraper</span>
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Saved Articles</a>
+            </li>
+            {{#unless articles}}
+            <li class="nav-item">
+                <button class='btn btn-md btn-success' id='scrape'>Scrape Articles!</button>
+            </li>
+            {{/unless}} {{#if articles}}
+            <li class="nav-item">
+                <button class='btn btn-md btn-danger' id='clear-articles'>Clear Articles</button>
+            </li>
+            {{/if}}
+        </ul>
+    </form>
+</nav>
+<div class="jumbotron jumbotron-fluid" style="text-align:center; background-color:#e8c166; padding:10em">
+    <div class="container">
+        <h1 class="display-4">Scrape The News</h1>
+        <p class="lead">Click above to get local news articles</p>
+    </div>
+</div>
+<ul class="articleResults">
+    {{#each articles}} 
+    <div class="media" style="padding: 5em">
+        <img src="{{img}}" class="mr-3" alt="...">
+        <div class="media-body">
+            <h5 class="mt-0">{{url}}</h5>
+            {{blurb}}
+            <button type="button" class="btn btn-primary" id="saveArticle" data-id="{{id}}">Save Article!</button>
+            <button type="button" class="btn btn-secondary" id="createNote" data-id="{{id}}">Create Note!</button>
+        </div>
+    </div>
+    {{/each}}
+</ul>
