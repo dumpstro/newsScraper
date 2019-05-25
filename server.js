@@ -7,7 +7,7 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 
 
-var PORT = 3000;
+//var PORT = 3000;
 
 var db = require("./models");
 
