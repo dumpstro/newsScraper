@@ -45,11 +45,16 @@
 $(document).on("click", "#scrape", function () {
     event.preventDefault();
     $.get("/scrape", function (data) {
-        location.reload("/")
+        console.log(data);
     }).catch(function (err) {
         res.json(err)
     })
 });
+
+$(document).on("click", "#closeScrape", function () {
+    event.preventDefault();
+    window.location.reload(true);
+})
 
 $(document).on("click", "#saveArticle", function () {
     event.preventDefault();
@@ -72,7 +77,8 @@ $(document).on("click", "#deleteSavedArticle", function () {
         type: "PUT",
         data: {id}
     }).then(
-        console.log("articleDeleted")       
+        console.log("articleDeleted"),
+        window.location.reload(true)      
     ).catch(function (err) {
         res.json(err)
     })
@@ -83,7 +89,9 @@ $(document).on("click", "#clearArticles", function() {
         type: "DELETE"
     }).then(function(){
         location.reload("/");
-    });
+    }).catch(function (err) {
+        res.json(err);
+    })
 });
 
 $(document).on("click", "#saveNote", function() {
@@ -98,8 +106,8 @@ $(document).on("click", "#saveNote", function() {
     }).then(function(data) {
         console.log(data);
         alert("Note Saved");
+    }).catch(function (err) {
+        res.json(err)
     })
-    
-
 })
 

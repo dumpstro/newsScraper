@@ -57,8 +57,10 @@ app.get("/scrape", function(req, res) {
             result.url = $(element).children("a").attr("href");
             result.blurb = $(element).children("a").attr("title");
             
+            console.log(result.blurb)
+
            db.Article.create(result).then(function(data) {
-                location.reload("/")
+                //location.reload("/")
                 console.log(data)
             }).catch(function(err){
                 console.log(err);
