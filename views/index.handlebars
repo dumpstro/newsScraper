@@ -6,15 +6,15 @@
                 <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Saved Articles</a>
+                <a class="nav-link" href="/saved" id="saved">Saved Articles</a>
             </li>
             {{#unless articles}}
             <li class="nav-item">
-                <button class='btn btn-md btn-success' id='scrape'>Scrape Articles!</button>
+                <button class='btn btn-md btn-success' id='scrape' data-toggle="modal" data-target="#scrapeModal">Scrape Articles!</button>
             </li>
             {{/unless}} {{#if articles}}
             <li class="nav-item">
-                <button class='btn btn-md btn-danger' id='clear-articles'>Clear Articles</button>
+                <button class='btn btn-md btn-danger' id='clearArticles'>Clear Articles</button>
             </li>
             {{/if}}
         </ul>
@@ -28,14 +28,74 @@
 </div>
 <ul class="articleResults">
     {{#each articles}} 
-    <div class="media" style="padding: 5em">
-        <img src="{{img}}" class="mr-3" alt="...">
+    <div class="media" style="padding: 5em" id:>
+        <a href="https:{{url}}"><img src="{{img}}" class="mr-3" alt="..."></a>`
         <div class="media-body">
-            <h5 class="mt-0">{{url}}</h5>
-            {{blurb}}
-            <button type="button" class="btn btn-primary" id="saveArticle" data-id="{{id}}">Save Article!</button>
-            <button type="button" class="btn btn-secondary" id="createNote" data-id="{{id}}">Create Note!</button>
+            <h5 class="mt-0">{{blurb}}</h5>
+            <br>
+            <button type="button" class="btn btn-primary" id="saveArticle" data-id="{{id}}" data-toggle="modal" data-target="#saveModal">Save Article!</button>
+            <button type="button" class="btn btn-secondary" id="createNote" data-id="{{id}}" data-toggle="modal" data-target="#noteModal">Create Note!</button>
         </div>
     </div>
     {{/each}}
 </ul>
+<div class="modal" tabindex="-1" role="dialog" id="scrapeModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Scrape Complete</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Checkout new articles below</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="saveModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Article saved!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Checkout your saved articles from the link above!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="noteModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add a note!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Note:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="saveNote">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

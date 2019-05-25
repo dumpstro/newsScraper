@@ -1,0 +1,29 @@
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <form class="form-inline">
+        <span class="navbar-brand mb-0 h1">Charlotte News Scraper</span>
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+        </ul>
+    </form>
+</nav>
+<div class="jumbotron jumbotron-fluid" style="text-align:center; background-color:#e8c166; padding:10em">
+    <div class="container">
+        <h1 class="display-4">Saved Articles</h1>
+        <p class="lead">Here are your saved Articles!</p>
+    </div>
+</div>
+<ul class="articleResults">
+    {{#each articles}}
+    <div class="media" style="padding: 5em">
+        <a href="https:{{url}}"><img src="{{img}}" class="mr-3" alt="..."></a>`
+        <div class="media-body">
+            <h5 class="mt-0">{{blurb}}</h5>
+            <br>
+            <button type="button" class="btn btn-primary" id="deleteSavedArticle" data-id="{{id}}">Delete Saved Article!</button>
+            <button type="button" class="btn btn-secondary" id="createNote" data-id="{{id}}">Create Note!</button>
+        </div>
+    </div>
+    {{/each}}
+</ul>

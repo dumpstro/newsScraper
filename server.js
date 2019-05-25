@@ -6,6 +6,7 @@ var cheerio = require("cheerio");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 
+
 var PORT = 3000;
 
 var db = require("./models");
@@ -57,7 +58,8 @@ app.get("/scrape", function(req, res) {
             result.blurb = $(element).children("a").attr("title");
             
            db.Article.create(result).then(function(data) {
-                console.log(data);
+                location.reload("/")
+                console.log(data)
             }).catch(function(err){
                 console.log(err);
             })
@@ -78,6 +80,18 @@ app.get("/", function(req, res) {
     });
 });
 
+//Render saved articles
+app.get("/saved", function(req, res) {
+    db.Article.find({ saved: true }).then(function(dbArticle) {
+        var allObject = {
+            articles: dbArticle
+        }
+        res.render("saved", allObject)
+    }).catch(function(err) {
+        console.log(err);
+    });
+});
+
 //Route to save Article
 app.put("/articles/:id", function(req, res) {
     db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: true })
@@ -89,7 +103,7 @@ app.put("/articles/:id", function(req, res) {
 })
 
 //Route to remove Article from Saved
-app.put("/articles/:id", function(req, res) {
+app.put("/removeArticles/:id", function(req, res) {
     db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: false })
         .then(function() {
             console.log("Article removed from saved!")
@@ -97,7 +111,6 @@ app.put("/articles/:id", function(req, res) {
             res.json(err)
         })
 })
-
 
 
 //Route for grabbing a specific article by id and populate it with it's note
@@ -115,7 +128,7 @@ app.get("/articles/:id", function(req, res) {
 app.post("/articles/:id", function(req, res) {
     db.Note.create(req.body)
         .then(function(dbNote) {
-            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote }, { new: true });
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
         })
         .then(function(dbArticle) {
             res.json(dbArticle);
@@ -123,6 +136,16 @@ app.post("/articles/:id", function(req, res) {
             res.json(err);
         });
 });
+
+//Route for deleting all articles
+app.delete("/deleteArticles", function(req, res) {
+    db.Article.deleteMany({ saved: false })
+        .then(function() {
+            console.log("Articles Deleted")
+        }).catch(function(err) {
+            res.json(err)
+        })
+})
 
 //HTML Home
 //app.get("/", function(req, res) {
