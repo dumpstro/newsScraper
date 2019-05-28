@@ -28,7 +28,7 @@ app.use(express.json());
 // Make public a static folder
 app.use(express.static("public"));
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/observer";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/fark";
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
@@ -45,17 +45,17 @@ app.get("/all", function(req, res) {
 
 //Scrape Charlotte Observer
 app.get("/scrape", function(req, res) {
-    axios.get("https://www.charlotteobserver.com/news/local").then(function(response) {
+    axios.get("https://www.fark.com").then(function(response) {
     //load the html body from axios into cheerio
         var $ = cheerio.load(response.data);
-        //each child element of figure tag
-        $("figure").each(function(i, element) {
+        //each child element of tr.headlineRow
+        $("tr.headlineRow").each(function(i, element) {
             var result = {};
             
             //result.img = $(element).children("a").children("img").attr("src");
             result.img = $(element).find("img").attr("src");
-            result.url = $(element).children("a").attr("href");
-            result.blurb = $(element).children("a").attr("title");
+            result.url = $(element).find("a").attr("href");
+            result.blurb = $(element).find("a").text();
             
             console.log(result.blurb)
 

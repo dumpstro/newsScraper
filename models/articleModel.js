@@ -4,8 +4,7 @@ var Schema = mongoose.Schema;
 
 var articleSchema = new Schema({
     img: {
-        type: String,
-        unique: true
+        type: String
     },
     url: {
         type: String,
